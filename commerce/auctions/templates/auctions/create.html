@@ -1,0 +1,35 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Create Listing</h2>
+    {% if user.is_authenticated %}
+        <form action="{% url 'create listing' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <p>Title:</p>
+            <input type="text" placeholder="Title" name="title" required>
+            <br><br>
+            <p>Image:</p>
+            <input type="text" placeholder="Image URL" name="image_url" required>
+            <br><br>
+            <p>Description:</p>
+            <input type="text" placeholder="Description" name="description" required>
+            <br><br>
+            <p>What the starting bid should be:</p>
+            <input type="number" placeholder="Price" name="price" required>
+            <br><br>
+            <p>Category:</p>
+            <select name="category">
+                {% for category in categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+            <input type="submit" value="Post">
+        </form>
+
+        
+    {% else %}
+        <p><a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">register</a> to create listing</p>
+    {% endif %}
+
+{% endblock %}

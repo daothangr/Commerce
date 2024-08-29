@@ -1,0 +1,96 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div>
+
+        <!-- Product Image -->
+        <div class="title d-flex justify-content-between align-items-center">
+            <h2>Listing: {{ product.title }}</h2>
+            {% if creater.person.username == link.person.username %}
+                <div>
+                    <form action="{% url 'specific' product.id %}" method = "post">
+                        {% csrf_token %}
+                        <input type="submit" name="close" class="btn btn-danger" value="Close">
+                    </form> 
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Product Infor -->
+        {% if link.watchList %}
+            <form action="{% url 'specific' product.id %}" method = "post">
+                {% csrf_token %}
+                <input type="submit" name="remove_watchlist" class="btn btn-secondary" value="Remove Watchlist">
+            </form>     
+        {% else %}
+            <form action="{% url 'specific' product.id %}" method = "post">
+                {% csrf_token %}
+                <input type="submit" name="add_watchlist" class="btn btn-secondary" value="Add Watchlist">
+            </form>
+        {% endif %}
+        <div class="card mb-4">
+            <img class="card-img-top specific-img" src="{{ product.image_url }}" alt="Product Image">
+            <div class="card-body">
+                <p class="card-text">{{ product.description }}</p>
+                <h4 class="card-title">${{ product.price }}</h4>
+            </div>
+        </div>
+        {% if user.is_authenticated %}
+
+            <!-- Bids -->
+            {% if product.closed %}
+                <h2 class="winner">{{ highest_bidder.person.username }} won the auction</h2>
+            {% else %}
+                <form action="{% url 'specific' product.id %}" method="post" class="mb-4">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <p>{{ count }} bid(s) so far. Your bid is the current bid.</p>
+                        <input type="text" name="bid" placeholder="Bid" class="form-control">
+                        <br>
+                        <input type="submit" value="Place Bid" class="btn btn-primary" name="place_bid">                    
+                    </div>
+
+                </form>
+            {% endif %}
+            
+            <!-- Details -->
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Details:</h4>
+                    <ul class="list-unstyled">
+                        <li><strong>Created by:</strong> {{ creater.person.username }}</li>
+                        <li><strong>Highest bidder:</strong> {{ highest_bidder.person.username }}</li>
+                        <li><strong>Category:</strong> {{ product.category }}</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <br>
+            <!-- Comment -->
+            <div class="card mb-4">
+                <h3 class="card-header">Comment</h3>
+                <div class="card-body">
+                    <form action="{% url 'specific' product.id %}" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <textarea class="form-control" name="comment_product" rows="4" maxlength="900" placeholder="Write your comment here..."></textarea>
+                            <input type="submit" value="Submit" class="btn btn-primary mt-2" name="comment">                    
+                        </div>
+                    </form>
+                    <hr>
+                    {% for comment_product in comments_product %}
+                        <div class="comment mt-3">
+                            <strong>{{ comment_product.person.username }}</strong>
+                            <p class="comment-text">{{ comment_product.comment }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+
+        {% else %}
+            <p>Please <a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">register</a> to bid</p>
+        {% endif %}
+    </div>
+
+{% endblock %}

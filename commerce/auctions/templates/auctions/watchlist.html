@@ -1,0 +1,31 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Watchlist</h2>
+    {% if user.is_authenticated %}
+        <div class="products row">
+        {% for product in products %}
+            <div class="col-md-6">
+                <a href="{% url 'specific' product.id %}">
+                    <div class="product row">
+                        <div class="product-img col-md-6">
+                            <img src="{{ product.image_url }}" alt="">
+                        </div>
+                        <div class="product-infor col-md-6">
+                            <h4>{{ product.title }}</h4>
+                            <p><span>Price:</span> ${{ product.price }}</p>
+                            <small>{{ product.time }}</small>
+                        </div>
+                        {% if product.closed %}
+                            <div class="closed">Closed</div>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <p><a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">register</a> to visit your Watchlist</p>
+    {% endif %}
+
+{% endblock %}
